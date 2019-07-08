@@ -1,7 +1,7 @@
 def test():
    print("Hello World")
 
-def mean_all(start_date, end_date, variable_name):
+def mean_all(ds, start_date, end_date, variable_name):
    '''
    get mean for entire dataset 
    '''
@@ -10,9 +10,9 @@ def mean_all(start_date, end_date, variable_name):
 
 
 
-def mean_catchment_mask_number(start_date, end_date, variable_name, catchment_mask_number):
+def mean_catchment_mask_number(ds, start_date, end_date, variable_name, catchment_mask_number):
    '''
-   get mean for entire dataset 
+   get mean for catchment_mask enabled dataset  
    '''
    result = ds[variable_name].sel(time=slice(pd.to_datetime(start_date), pd.to_datetime(end_date))).where(ds.mask == catch_num).mean(dim=('time'))
    return result
