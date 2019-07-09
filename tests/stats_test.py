@@ -9,22 +9,20 @@ import sys
 #import numpy as np
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, '..', 'silverpieces'))
-import silverpieces.functions  
+import functions  
 from utilities import *
 
 class TestStatMethods(unittest.TestCase):
 
     def test_dummy(self):
-        silverpieces.functions.test()        
+        functions.test()        
         self.assertEqual(1, 1)
 
     def test_sum(self):        
-        t,y,x,src_data = get_data_src(nt=2000,ny=100,nx=100)        
-        # f=create_file(t,'t',y,'y',x,'x',src_data,'band')
-        # print(f.name)
-        self.assertEqual(t.size, 2000)
+        t,x,y,src_data = get_data_src() 
+        f=create_file(t,'t',y,'y',x,'x',src_data,'band')        
+        self.assertEqual(t.size, 365)
 
 if __name__ == '__main__':
-    # import numpy as np
     unittest.main()
     

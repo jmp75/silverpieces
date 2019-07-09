@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 def create_file(d1, d1_name, d2, d2_name, d3, d3_name, val, varname, **args):
     global tmp_file
 
-    try: 
+    try:
         if os.path.exists(tmp_file.name):
             tmp_file.close()
             os.unlink(tmp_file.name)
@@ -36,7 +36,8 @@ def create_file(d1, d1_name, d2, d2_name, d3, d3_name, val, varname, **args):
     dim_wrt = fw.createVariable(d3_name, d3.dtype, d3_name)
     dim_wrt[:] = d3
 
-    var_wrt = fw.createVariable(varname, val.dtype, (d1_name, d2_name, d3_name), **args)  
+    var_wrt = fw.createVariable(
+        varname, val.dtype, (d1_name, d2_name, d3_name), **args)
 
     var_wrt = val
 
@@ -44,13 +45,29 @@ def create_file(d1, d1_name, d2, d2_name, d3, d3_name, val, varname, **args):
     return tmp_file
 
 
-def get_data_src(nt=100, ny=100, nx=100):
+def get_data_src_random(nt=365, nx=100, ny=100):
     t = np.random.uniform(-1, 1, size=nt)
-    y = np.random.uniform(-1, 1, size=ny)
     x = np.random.uniform(-1, 1, size=nx)
+    y = np.random.uniform(-1, 1, size=ny)
     #data=np.random.uniform(-1, 1, size=nt*ny*nx)
-    data = np.random.randint(0, 100, size=(nt, ny, nx))
-    return t, y, x, data
+    data = np.random.randint(0, 100, size=(nt, nx, ny))
+    return t, x, y, data
+
+
+def get_data_src(nt=365, nx=2, ny=2):
+    t = np.arange(nt)
+    x = np.arange(nx)
+    y = np.arange(ny)
+    data = np.arange(nt*nx*ny).reshape(nt, nx, ny)
+    for i in range(nt):
+        data[i] = np.linspace(i,i,num=nx*ny).reshape(nx, ny)
+    return t, x, y, data
 
 # t,y,x,src_data=get_data_src(nt=2000,ny=100,nx=100)
 # f=create_file(t,'t',y,'y',x,'x',src_data,'band')
+#suppose you want to generate 4 days worth of data. For each day, the values would be a 2 X 2 matrix
+# a = np.arange(16).reshape(4, 2,2)
+# for x in range(4):
+#     a[x] = np.linspace(x,x,num=4).reshape(2,2)
+
+# np.linspace(0,0,num=4)
