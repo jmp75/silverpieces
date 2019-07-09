@@ -19,9 +19,11 @@ class TestStatMethods(unittest.TestCase):
         self.assertEqual(1, 1)
 
     def test_sum(self):        
-        t,x,y,src_data = get_data_src() 
-        f=create_file(t,'t',y,'y',x,'x',src_data,'band')        
-        self.assertEqual(t.size, 365)
+        time,lat,lon,src_data = get_data_src() 
+        f=create_file(time,'time',lat,'lat', lon,'lon',src_data,'band')
+        band=read_var(f.name,'band')
+        #band=link_var(f.name,'band')
+        self.assertEqual(time.size, 365)
 
 if __name__ == '__main__':
     unittest.main()

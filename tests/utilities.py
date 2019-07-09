@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 import numpy as np
 from netCDF4 import Dataset
 from tempfile import NamedTemporaryFile
@@ -22,24 +23,33 @@ def create_file(d1, d1_name, d2, d2_name, d3, d3_name, val, varname, **args):
     fw = Dataset(fname, 'w', format='NETCDF4')
 
     # Create the one-dimension named 'd1_name' and the associated variable
-    fw.createDimension(d1_name, len(d1))
-    dim_wrt = fw.createVariable(d1_name, d1.dtype, d1_name)
+    fw.createDimension(d1_name, None) #len(d1))
+    dim_wrt = fw.createVariable(d1_name, d1.dtype, d1_name) #"f8", ("time",))
+    dim_wrt.units = 'days since 2010-01-01 00:00:00'  
+    dim_wrt.calendar = 'gregorian'  
     dim_wrt[:] = d1
 
     # Create the one-dimension named 'd2_name' and the associated variable
     fw.createDimension(d2_name, len(d2))
     dim_wrt = fw.createVariable(d2_name, d2.dtype, d2_name)
+    dim_wrt.units = 'degree_north'  
     dim_wrt[:] = d2
 
     # Create the one-dimension named 'd3_name' and the associated variable
     fw.createDimension(d3_name, len(d3))
     dim_wrt = fw.createVariable(d3_name, d3.dtype, d3_name)
+    dim_wrt.units = 'degree_east'  
     dim_wrt[:] = d3
 
     var_wrt = fw.createVariable(
         varname, val.dtype, (d1_name, d2_name, d3_name), **args)
 
-    var_wrt = val
+    # var_wrt = val
+    var_wrt[0:len(d1),:,:,] = np.random.uniform(size=(len(d1),len(d2),len(d3)))
+
+    fw.description = 'dummy data'  
+    fw.history = 'Created ' + time.ctime(time.time())  
+    fw.source = 'Stats unit test app' 
 
     fw.close()
     return tmp_file
@@ -54,14 +64,24 @@ def get_data_src_random(nt=365, nx=100, ny=100):
     return t, x, y, data
 
 
-def get_data_src(nt=365, nx=2, ny=2):
+def get_data_src(nt=365, nx=3, ny=2):
     t = np.arange(nt)
-    x = np.arange(nx)
-    y = np.arange(ny)
+    lat = np.arange(nx)
+    lon = np.arange(ny)
     data = np.arange(nt*nx*ny).reshape(nt, nx, ny)
     for i in range(nt):
         data[i] = np.linspace(i,i,num=nx*ny).reshape(nx, ny)
-    return t, x, y, data
+    return t, lat, lon, data
+
+def read_var(filename,varname):
+    fr = Dataset(filename,'r',format='NETCDF4')
+    out=fr[varname][:]
+    fr.close()
+    return out
+    
+def link_var(filename,varname):
+    fr = Dataset(filename,'r',format='NETCDF4')
+    return fr[varname]
 
 # t,y,x,src_data=get_data_src(nt=2000,ny=100,nx=100)
 # f=create_file(t,'t',y,'y',x,'x',src_data,'band')
