@@ -86,6 +86,6 @@ def test_quantiles_dc():
     assert np.all(cat_q[1,:] == 1)
     assert np.all(cat_q[2,:] == 2)
 
-test_num_year_detection()
-test_rolling_years_stats()
-test_quantiles_dc()
+# test_num_year_detection()
+# test_rolling_years_stats()
+# test_quantiles_dc()
