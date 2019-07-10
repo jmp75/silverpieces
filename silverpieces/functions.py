@@ -138,9 +138,3 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
       y[self.time_dimname] = np.array([pd.to_datetime(start_time + relativedelta(years=year)) for year in range(n_years)])
       return y
 
-
-def mean(obj, dim):
-    # note: apply always moves core dimensions to the end
-    return apply_ufunc(np.mean, obj,
-                       input_core_dims=[[dim]],
-                       kwargs={'axis': -1})
