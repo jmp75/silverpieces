@@ -29,11 +29,11 @@ def create_daily_sp_cube(start_time, end_time, nx=2, ny=3, fun_fill=fill_time_in
     tdim = pd.date_range(start=start_time, end=end_time, freq='D')
     xdim = np.arange(0, nx * 0.5 - 1e-2, 0.5)
     ydim = np.arange(0.25, 0.25 + ny * 0.5 - 1e-2, 0.5)
-    x = np.empty([len(tdim), nx, ny])
+    x = np.empty([len(tdim), ny, nx])
     fun_fill(x)
     y = xr.DataArray(x, 
-                coords=[tdim,xdim,ydim],
-                dims=['time', 'lon', 'lat'],
+                coords=[tdim,ydim,xdim],
+                dims=['time', 'lat', 'lon'],
                 name='test_daily_data')
     return y
 
@@ -48,13 +48,14 @@ def test_num_year_detection():
 
 def test_rolling_years_stats():
     start_time = pd.to_datetime('2001-01-01')
+    end_time = pd.to_datetime('2002-12-31')
     x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
     s = SpatialTemporalDataArrayStat()
     y = s.rolling_years(x, '2001-01-01', '2002-12-31')
-    assert len(y.time) == (9 - 2)
+    assert len(y.time) == (9 - 2 + 1)
     tdim = y[s.time_dimname].values
-    assert pd.to_datetime(tdim[0] ) == start_time
-    assert pd.to_datetime(tdim[-1]) == pd.to_datetime('2007-01-01')
+    assert pd.to_datetime(tdim[0] ) == end_time
+    assert pd.to_datetime(tdim[-1]) == pd.to_datetime('2009-12-31')
     assert np.all(y[0,:,:] == 365 * 1.0)
     assert np.all(y[1,:,:] == 365 * (1.0 + 2.0))
     y = s.rolling_years(x, '2001-01-01', '2002-12-31', n_years = None, func = np.mean)
@@ -62,13 +63,29 @@ def test_rolling_years_stats():
     assert np.all(y[1,:,:] == 1.5)
 
     y = s.rolling_years(x, '2004-01-01', '2005-12-31')
-    assert len(y.time) == (9 - 2)
+    assert len(y.time) == (9 - 2 + 1)
     tdim = y[s.time_dimname].values
-    assert pd.to_datetime(tdim[0] ) == start_time
-
+    assert pd.to_datetime(tdim[0] ) == end_time
 
 def test_quantiles_dc():
-    pass
+    start_time = pd.to_datetime('2001-01-01')
+    end_time = pd.to_datetime('2002-12-31')
+    x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
+    s = SpatialTemporalDataArrayStat()
+    y = s.rolling_years(x, '2001-01-01', '2002-12-31')
+    q = np.array([.1, .5, .9])
+    qs = s.quantile_over_time_dim(y, q)
+    z = y[0,:,:].copy()
+    # z[]
+    z[0,:] = 10.0
+    z[1,:] = 1000.0
+    z[2,:] = 3000.0
+    cat_q = s.searchsorted(qs, z)
+    assert cat_q.shape == (3, 2)
+    assert np.all(cat_q[0,:] == 0)
+    assert np.all(cat_q[1,:] == 1)
+    assert np.all(cat_q[2,:] == 2)
 
-# test_num_year_detection()
+test_num_year_detection()
 test_rolling_years_stats()
+test_quantiles_dc()

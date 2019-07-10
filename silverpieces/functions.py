@@ -55,20 +55,32 @@ def mean_catchment_mask_number_xr(ds, start_date, end_date, variable_name, catch
     result = ds[variable_name].sel(time=slice(pd.to_datetime(start_date), pd.to_datetime(end_date))).where(ds.mask == catch_num).mean(dim=('time'))
     return result
 
-def max_shifting_years(start_record, end_record, start_period, end_period):
+
+def get_first_period(start_record, end_record, start_period, end_period):
     start_record = pd.to_datetime(start_record)
     end_record = pd.to_datetime(end_record)
     start_period = pd.to_datetime(start_period)
     end_period = pd.to_datetime(end_period)
-
+    pspan = end_period - start_period
     delta_year = relativedelta(years=1)
-
     # what is the first day of year of the start of the period that fits the record?
     start_rec_year = start_record.year
     d = datetime(start_rec_year, start_period.month, start_period.day)
     if d < start_record:
         d = d + delta_year
-    # what is the last day of year of the end of the period that fits the record?
+    delta_years = start_period.year - d.year
+    e = end_period + relativedelta(years=-delta_years)
+    return (d, e)
+
+def max_shifting_years(start_record, end_record, start_period, end_period):
+    start_record = pd.to_datetime(start_record)
+    end_record = pd.to_datetime(end_record)
+    start_period = pd.to_datetime(start_period)
+    end_period = pd.to_datetime(end_period)
+    delta_year = relativedelta(years=1)
+    # what is the first 'day of year' of the start of the period that fits the record?
+    d, _ = get_first_period(start_record, end_record, start_period, end_period)
+    # what is the last 'day of year' of the end of the period that fits the record?
     end_rec_year = end_record.year
     e = datetime(end_rec_year, end_period.month, end_period.day)
     if e > end_record:
@@ -117,7 +129,7 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
         y_dimname (str):
         time_dimname (str):
         """
-    def _max_num_years_extent(self, x, start_time, end_time):
+    def _max_num_years_shift(self, x, start_time, end_time):
         tdim = x[self.time_dimname].values
         return max_shifting_years(tdim[0], tdim[-1], start_time, end_time)
 
@@ -128,13 +140,39 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
                         #kwargs={'axis': -1, 'skipna':False})
                         kwargs={'axis': -1})
         
-    def rolling_years(self, x, start_time, end_time, n_years = None, func = np.sum):
+    def rolling_years(self, x, start_time, end_time, n_years = None, func = np.sum): 
         start_time = pd.to_datetime(start_time)
         end_time = pd.to_datetime(end_time)
         if n_years is None:
-            n_years = self._max_num_years_extent(x, start_time, end_time)
-        cumulated = [self._apply_timeslice(x, start_time + relativedelta(years=year), end_time + relativedelta(years=year), func) for year in range(n_years)]
+            n_years = self._max_num_years_shift(x, start_time, end_time) + 1
+        td = x[self.time_dimname].values
+        start_record = td[0]
+        end_record = td[-1]
+        d, e = get_first_period(start_record, end_record, start_time, end_time)    
+        cumulated = [self._apply_timeslice(x, d + relativedelta(years=year), e + relativedelta(years=year), func) for year in range(n_years)]
         y = xr.concat(cumulated, dim=self.time_dimname)
-        y[self.time_dimname] = np.array([pd.to_datetime(start_time + relativedelta(years=year)) for year in range(n_years)])
+        # maybe an optional arg for the resulting time dimension (start or end of periods)
+        y[self.time_dimname] = np.array([pd.to_datetime(e + relativedelta(years=year)) for year in range(n_years)])
         return y
+
+    def quantile_over_time_dim(self, x, q, interpolation = 'linear', keep_attrs=None):
+        return x.quantile(q=q, dim=[self.time_dimname], interpolation=interpolation, keep_attrs=keep_attrs)            
+
+    def searchsorted(self, q_values, x):
+        nlon = len(q_values[self.x_dimname])
+        nlat = len(q_values[self.y_dimname])
+        xresult = x.copy()
+        result = np.empty_like(x, dtype=np.float32)
+        # I could not figure out how to vectorise this
+        # tried a variety of things like `v_searchsorted = np.vectorize(np.searchsorted, signature='(n,m),(n,m)->(n)')` but to no avail. 
+        # TODO
+        for lat in np.arange(nlat):
+            for lon in np.arange(nlon):
+                xv = x[lat, lon]
+                if np.isnan(xv): # just in case - try without?
+                    result[lat, lon] = np.nan
+                else:
+                    result[lat, lon] = np.searchsorted(q_values[:,lat, lon].values, xv)
+        xresult.values = result
+        return xresult
 
