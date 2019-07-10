@@ -8,19 +8,36 @@ from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 
 def monthly_mean(args_file):
-    """Calculates the monthly mean for a specified variable between start_date and end_date
+   """Calculates the monthly mean.
+   
+   Arguments:
+       args_file {[YAML python object]} -- [YAML object encapsulating the parameters passed to monthly_mean method]
+   """
+   product = args_file.get('Args').get('product')
+   variable_name = args_file.get('Args').get('variablename')
+   start_date = args_file.get('Args').get('timespan').get('startDate')
+   end_date = args_file.get('Args').get('timespan').get('endDate')
 
-    Arguments:
-        ds {[type]} -- [description]
-        start_date {[type]} -- [description]
-        end_date {[type]} -- [description]
-        variable_name {[type]} -- [description]
-    """
-    product = args_file.get('Args').get('product')
-    variable_name = args_file.get('Args').get('variablename')   
-    ds = xr.open_dataset(product)
-    result = ds[variable_name].groupby('time.month').mean(dim='time')
-    return result
+   ds = xr.open_dataset(product)
+   result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.month').mean(dim='time')
+
+   return result
+
+def yearly_mean(args_file):
+   """Calculates the monthly mean.
+   
+   Arguments:
+       args_file {[YAML python object]} -- [YAML object encapsulating the parameters passed to monthly_mean method]
+   """
+   product = args_file.get('Args').get('product')
+   variable_name = args_file.get('Args').get('variablename')   
+   start_date = args_file.get('Args').get('timespan').get('startDate')
+   end_date = args_file.get('Args').get('timespan').get('endDate')
+
+   ds = xr.open_dataset(product)
+   result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.year').mean(dim='time')
+
+   return result
 
 def mean_all_odc(product, timespan, spatial_extents, projection, resolution):
     '''
