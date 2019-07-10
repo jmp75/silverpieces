@@ -103,11 +103,12 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
         time_dimname (str):
       """
    def _max_num_years_extent(self, x, start_time, end_time):
-      tdim = x[self.time_dimname]
-      tdim[-1]
-      return 0
+      tdim = x[self.time_dimname].values
+      return max_shifting_years(tdim[0], tdim[-1], start_time, end_time)
    
    def rolling_years(self, x, start_time, end_time, n_years = None):
+      start_time = pd.to_datetime(start_time)
+      end_time = pd.to_datetime(end_time)
       if n_years is None:
          n_years = self._max_num_years_extent(x, start_time, end_time)
       cumulated = [x.loc[dict(time=slice(start_time + relativedelta(years=year), end_time + relativedelta(years=year)))].sum(dim=self.time_dimname,skipna=False) for year in range(n_years)]

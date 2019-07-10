@@ -32,14 +32,15 @@ def test_num_year_detection():
     assert max_shifting_years('2001-01-01', '2003-12-31', '2001-01-01', '2002-12-31') == 1
     assert max_shifting_years('2001-01-01', '2003-12-30', '2001-01-01', '2002-12-31') == 0
 
+
+def test_rolling_years_stats():
+    start_time = pd.to_datetime('2001-01-01')
+    end_time = pd.to_datetime('2018-12-31')
+    x = create_daily_year('2001-01-01', '2009-12-31', nx=2, ny=3)
+    s = SpatialTemporalDataArrayStat()
+    y = s.rolling_years(x, '2001-01-01', '2002-12-31')
+    assert len(y.time) == (9 - 2)
+
+
 # test_num_year_detection()
-
-# def test_rolling_years_stats():
-#     start_time = pd.to_datetime('2001-01-01')
-#     end_time = pd.to_datetime('2018-12-31')
-#     x = create_daily_year('2001-01-01', '2009-12-31', nx=2, ny=3)
-#     s = SpatialTemporalDataArrayStat()
-#     y = s.rolling_years(x, '2001-01-01', '2002-12-31')
-#     assert len(y.time) == (10 - 1)
-
 # test_rolling_years_stats()
