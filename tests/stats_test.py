@@ -42,6 +42,26 @@ class TestStatMethods(unittest.TestCase):
             except yaml.YAMLError as exc:
                 print(exc)
 
+    def test_yearly_mean(self):
+        print("current Directory is:",os.getcwd())
+        with open("./tests/testArg_ver2.yaml", 'r') as stream:
+            try:
+                args_file = yaml.safe_load(stream)
+                t,x,y,src_data=get_data_src_seq(nt=730,nx=3,ny=2)
+                f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band')
+
+                #replace the product name with filename with dummy data
+                args_file['Args']['product'] = f.name
+                result = functions.yearly_mean(args_file)
+                yearly_2011_mean = np.arange(365,730).sum()/365
+                
+                
+                self.assertEqual(result[0][0][0], yearly_2011_mean)
+                self.assertEqual(result.shape, (1, 3, 2))            
+                self.assertEqual(result.dims[0], 'year')            
+            except yaml.YAMLError as exc:
+                print(exc)
+
 if __name__ == '__main__':
     unittest.main()
     
