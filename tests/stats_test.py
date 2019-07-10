@@ -18,12 +18,11 @@ class TestStatMethods(unittest.TestCase):
         functions.test()        
         self.assertEqual(1, 1)
 
-    def test_sum(self):        
-        time,lat,lon,src_data = get_data_src() 
-        f=create_file(time,'time',lat,'lat', lon,'lon',src_data,'band')
-        band=read_var(f.name,'band')
-        #band=link_var(f.name,'band')
-        self.assertEqual(time.size, 365)
+    def test_dummy_data_shape(self):        
+        t,x,y,src_data=get_data_src_seq(nt=5,nx=3,ny=2)
+        f=create_file(t,'t',x,'latitude',y,'longitude',src_data,'band')
+        band=read_var(f.name,'band')        
+        self.assertEqual(band.shape, (5, 3, 2))
 
 if __name__ == '__main__':
     unittest.main()
