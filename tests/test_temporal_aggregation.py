@@ -48,7 +48,6 @@ def test_num_year_detection():
 
 def test_rolling_years_stats():
     start_time = pd.to_datetime('2001-01-01')
-    end_time = pd.to_datetime('2018-12-31')
     x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
     s = SpatialTemporalDataArrayStat()
     y = s.rolling_years(x, '2001-01-01', '2002-12-31')
@@ -61,6 +60,12 @@ def test_rolling_years_stats():
     y = s.rolling_years(x, '2001-01-01', '2002-12-31', n_years = None, func = np.mean)
     assert np.all(y[0,:,:] == 0.5)
     assert np.all(y[1,:,:] == 1.5)
+
+    y = s.rolling_years(x, '2004-01-01', '2005-12-31')
+    assert len(y.time) == (9 - 2)
+    tdim = y[s.time_dimname].values
+    assert pd.to_datetime(tdim[0] ) == start_time
+
 
 def test_quantiles_dc():
     pass
