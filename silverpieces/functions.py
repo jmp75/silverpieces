@@ -7,6 +7,21 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 
+def monthly_mean(args_file):
+   """Calculates the monthly mean for a specified variable between start_date and end_date
+   
+   Arguments:
+       ds {[type]} -- [description]
+       start_date {[type]} -- [description]
+       end_date {[type]} -- [description]
+       variable_name {[type]} -- [description]
+   """
+   product = args_file.get('Args').get('product')
+   variable_name = args_file.get('Args').get('variablename')   
+   ds = xr.open_dataset(product)
+   result = ds[variable_name].groupby('time.month').mean(dim='time')
+   return result
+
 def mean_all_odc(product, timespan, spatial_extents, projection, resolution):
    '''
    get product from data cube with specified resolution and projection

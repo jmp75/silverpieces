@@ -1,0 +1,16 @@
+Args: 
+    product: 'AWRA' #fill in the name of the test file created with dummy data
+    timespan:
+        startDate:  '2010-01-01'
+        endDate:  '2010-12-31'
+    variablename: 'band'
+
+
+# Args:
+#   - 
+#     product: 'AWRA'
+#     timespan:
+#       -
+#         startDate:  '2010-01-01'
+#         endDate:  '2010-12-31'
+#     variablename: 'band'    
