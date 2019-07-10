@@ -106,11 +106,26 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
       tdim = x[self.time_dimname].values
       return max_shifting_years(tdim[0], tdim[-1], start_time, end_time)
    
-   def rolling_years(self, x, start_time, end_time, n_years = None):
+   def _apply_timeslice(self, x, start_time, end_time, func = np.sum):
+      y = x.loc[{ self.time_dimname: slice(start_time, end_time) }]
+      return xr.apply_ufunc(func, y,
+                       input_core_dims=[[self.time_dimname]],
+                       #kwargs={'axis': -1, 'skipna':False})
+                       kwargs={'axis': -1})
+      
+   def rolling_years(self, x, start_time, end_time, n_years = None, func = np.sum):
       start_time = pd.to_datetime(start_time)
       end_time = pd.to_datetime(end_time)
       if n_years is None:
          n_years = self._max_num_years_extent(x, start_time, end_time)
-      cumulated = [x.loc[dict(time=slice(start_time + relativedelta(years=year), end_time + relativedelta(years=year)))].sum(dim=self.time_dimname,skipna=False) for year in range(n_years)]
-      return xr.concat(cumulated, dim=self.time_dimname)
+      cumulated = [self._apply_timeslice(x, start_time + relativedelta(years=year), end_time + relativedelta(years=year), func) for year in range(n_years)]
+      y = xr.concat(cumulated, dim=self.time_dimname)
+      y[self.time_dimname] = np.array([pd.to_datetime(start_time + relativedelta(years=year)) for year in range(n_years)])
+      return y
 
+
+def mean(obj, dim):
+    # note: apply always moves core dimensions to the end
+    return apply_ufunc(np.mean, obj,
+                       input_core_dims=[[dim]],
+                       kwargs={'axis': -1})
