@@ -103,9 +103,13 @@ def mean_catchment_mask_number_xr(ds, start_date, end_date, variable_name, catch
 
 
 def to_datetime(*dts):
+    """Vectorised wrapper to convert to pandas timestamps. Tuple returned.
+    """
     return tuple([pd.to_datetime(x) for x in dts])
 
 def get_first_period(start_record, end_record, start_period, end_period):
+    """Given the starts/ends of a record and period, find the first period whose start is in this record, shifted yearly.
+    """
     start_record, end_record, start_period, end_period = to_datetime(start_record, end_record, start_period, end_period)
     pspan = end_period - start_period
     delta_year = relativedelta(years=1)
@@ -119,6 +123,8 @@ def get_first_period(start_record, end_record, start_period, end_period):
     return (d, e)
 
 def max_shifting_years(start_record, end_record, start_period, end_period):
+    """Given the starts/ends of a record and period, what is the maximum yearly shift from the earliest period that would still fit in the record.
+    """
     start_record, end_record, start_period, end_period = to_datetime(start_record, end_record, start_period, end_period)
     delta_year = relativedelta(years=1)
     # what is the first 'day of year' of the start of the period that fits the record?
@@ -187,7 +193,7 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
                         #kwargs={'axis': -1, 'skipna':False})
                         kwargs={'axis': -1})
         
-    def periods_stat_summary(self, x, start_time, end_time, func = np.sum, start_record = None, end_record = None): 
+    def periods_stat_yearly(self, x, start_time, end_time, func = np.sum, start_record = None, end_record = None): 
         """Statistical summary/summaries over periods within an X-Y-T data array. 
         
         Args:
@@ -204,7 +210,7 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
 
             >>> x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
             >>> s = SpatialTemporalDataArrayStat()
-            >>> y = s.periods_stat_summary(x, '2001-04-01', '2001-08-31')
+            >>> y = s.periods_stat_yearly(x, '2001-04-01', '2001-08-31')
             >>> y.name = 'southern autumn/winter sums'
             >>> x.shape
             (3287, 3, 2)
