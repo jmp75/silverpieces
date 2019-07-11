@@ -95,11 +95,11 @@ def mean_all_xr(ds, start_date, end_date, variable_name):
     return result
 
 def mean_catchment_mask_number_xr(ds, start_date, end_date, variable_name, catchment_mask_number):
-    '''
-    get mean for catchment_mask enabled dataset  
-    '''
-    result = ds[variable_name].sel(time=slice(pd.to_datetime(start_date), pd.to_datetime(end_date))).where(ds.mask == catch_num).mean(dim=('time'))
-    return result
+   '''
+   get mean for catchment_mask enabled dataset  
+   '''
+   result = ds[variable_name].sel(time=slice(pd.to_datetime(start_date), pd.to_datetime(end_date))).where(ds.mask == catchment_mask_number).mean(dim=('time'))
+   return result
 
 def max_shifting_years(start_record, end_record, start_period, end_period):
     start_record = pd.to_datetime(start_record)
@@ -183,4 +183,3 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
         y = xr.concat(cumulated, dim=self.time_dimname)
         y[self.time_dimname] = np.array([pd.to_datetime(start_time + relativedelta(years=year)) for year in range(n_years)])
         return y
-
