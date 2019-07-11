@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
-from Utility import Utility
+from silverpieces.utility import Utility
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
