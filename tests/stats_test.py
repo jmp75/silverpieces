@@ -16,10 +16,15 @@ from utilities import *
 class TestStatMethods(unittest.TestCase):
 
     def test_dummy_data_shape(self):
-        t,x,y,src_data=get_data_src_seq(nt=5,nx=3,ny=2)
-        f=create_file(t,'t',x,'latitude',y,'longitude',src_data,'band')
-        band=read_var(f.name,'band')
-        self.assertEqual(band.shape, (5, 3, 2))
+        try:
+            t,x,y,src_data=get_data_src_seq(nt=5,nx=3,ny=2)
+            f=create_file(t,'t',x,'latitude',y,'longitude',src_data,'band')
+            band=read_var(f.name,'band')
+            self.assertEqual(band.shape, (5, 3, 2))
+        finally:
+            f.close()
+            os.unlink(f.name)
+
 
     def test_monthly_mean(self):
         print("current Directory is:",os.getcwd())
@@ -44,6 +49,10 @@ class TestStatMethods(unittest.TestCase):
                 # self.assertEqual(result.dims[0], 'month')
             except yaml.YAMLError as exc:
                 print(exc)
+            finally:
+                f.close()
+                os.unlink(f.name)
+
 
     def test_monthly_mean_over_multiple_years(self):
         print("current Directory is:", os.getcwd())
@@ -71,6 +80,9 @@ class TestStatMethods(unittest.TestCase):
             # self.assertEqual(result.dims[0], 'month')
         except yaml.YAMLError as exc:
             print(exc)
+        finally:
+            f.close()
+            os.unlink(f.name)
 
     def test_yearly_mean(self):
         print("current Directory is:",os.getcwd())    
@@ -101,6 +113,9 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except yaml.YAMLError as exc:
             print(exc)
+        finally:
+            f.close()
+            os.unlink(f.name)
 
     def test_seasonal_mean(self):
         print("current Directory is:",os.getcwd())    
@@ -135,6 +150,9 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except yaml.YAMLError as exc:
             print(exc)
+        finally:
+            f.close()
+            os.unlink(f.name)
 
     def test_seasonal_mean_partial_dataset1(self):
         print("current Directory is:",os.getcwd())    
@@ -169,6 +187,9 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except yaml.YAMLError as exc:
             print(exc)
+        finally:
+            f.close()
+            os.unlink(f.name)
 
     def test_seasonal_mean_partial_dataset2(self):
         print("current Directory is:",os.getcwd())    
@@ -203,6 +224,9 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except yaml.YAMLError as exc:
             print(exc)
+        finally:
+            f.close()
+            os.unlink(f.name)
 
 if __name__ == '__main__':
     unittest.main()
