@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
+from Utility import Utility
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
@@ -13,10 +14,7 @@ def monthly_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product = args_file.get('Args').get('product')
-    variable_name = args_file.get('Args').get('variablename')
-    start_date = args_file.get('Args').get('timespan').get('startDate')
-    end_date = args_file.get('Args').get('timespan').get('endDate')
+    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
 
     ds = xr.open_dataset(product)
     #The issue with groupby is that it will aggregate the complete dataset down to 12 months. So if you have 2 years
@@ -38,10 +36,7 @@ def yearly_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product = args_file.get('Args').get('product')
-    variable_name = args_file.get('Args').get('variablename')   
-    start_date = args_file.get('Args').get('timespan').get('startDate')
-    end_date = args_file.get('Args').get('timespan').get('endDate')
+    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
 
     ds = xr.open_dataset(product)
 
@@ -57,10 +52,7 @@ def seasonal_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product = args_file.get('Args').get('product')
-    variable_name = args_file.get('Args').get('variablename')   
-    start_date = args_file.get('Args').get('timespan').get('startDate')
-    end_date = args_file.get('Args').get('timespan').get('endDate')
+    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
 
     ds = xr.open_dataset(product)
 
