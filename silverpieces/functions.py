@@ -123,13 +123,17 @@ def max_shifting_years(start_record, end_record, start_period, end_period):
     d, _ = get_first_period(start_record, end_record, start_period, end_period)
     # what is the last 'day of year' of the end of the period that fits the record?
     end_rec_year = end_record.year
+    period_delta_years = end_period.year - start_period.year
     e = datetime(end_rec_year, end_period.month, end_period.day)
     if e > end_record:
         e = e - delta_year
-    tspan = e - d
-    pspan = end_period - start_period
-    max_shift = tspan - pspan
-    last_start_period = d + max_shift
+    ## using time differences will not always work due to leap years...
+    # tspan = e - d
+    # pspan = end_period - start_period
+    # max_shift = tspan - pspan
+    #
+    # Instead:
+    last_start_period = datetime(e.year - period_delta_years, start_period.month, start_period.day)
     max_years_shift = last_start_period.year - d.year
     return max_years_shift
 

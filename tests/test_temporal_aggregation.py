@@ -44,6 +44,10 @@ def test_num_year_detection():
     #
     assert max_shifting_years('2001-01-01', '2003-12-31', '2001-01-01', '2002-12-31') == 1
     assert max_shifting_years('2001-01-01', '2003-12-30', '2001-01-01', '2002-12-31') == 0
+    # If the windows is less than a calendar year, it should still find the right max shift
+    assert max_shifting_years('2007-01-01', '2018-12-31', '2001-01-01', '2001-12-31') == 11
+    # 2016 a leap year...
+    assert max_shifting_years('2007-01-01', '2018-12-31', '2016-01-01', '2016-12-31') == 11
 
 
 def test_periods_stat_yearly_stats():
@@ -67,6 +71,17 @@ def test_periods_stat_yearly_stats():
     tdim = y[s.time_dimname].values
     assert pd.to_datetime(tdim[0] ) == end_time
 
+
+def test_periods_stat_yearly_stats_leap_years():
+    # Noticed a bug in a notebook. Had to happen with leap yr.
+    x = create_daily_sp_cube('2007-01-01', '2018-12-31', nx=2, ny=3, fun_fill=fill_year)
+    s = SpatialTemporalDataArrayStat()
+    y = s.periods_stat_yearly(x, '2016-01-01', '2016-12-31')
+    assert len(y.time) == 12
+    tdim = y[s.time_dimname].values
+    assert pd.to_datetime(tdim[0]) == pd.to_datetime('2007-12-31')
+    assert pd.to_datetime(tdim[-1]) == pd.to_datetime('2018-12-31')
+
 def test_quantiles_dc():
     start_time = pd.to_datetime('2001-01-01')
     end_time = pd.to_datetime('2002-12-31')
@@ -89,3 +104,4 @@ def test_quantiles_dc():
 # test_num_year_detection()
 # test_periods_stat_yearly_stats()
 # test_quantiles_dc()
+test_periods_stat_yearly_stats_leap_years()
