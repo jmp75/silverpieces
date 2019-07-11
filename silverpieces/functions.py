@@ -1,43 +1,53 @@
 import xarray as xr
 import numpy as np
-import xarray as xr
-import numpy as np
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 
 def monthly_mean(args_file):
-   """Calculates the monthly mean.
-   
-   Arguments:
-       args_file {[YAML python object]} -- [YAML object encapsulating the parameters passed to monthly_mean method]
-   """
-   product = args_file.get('Args').get('product')
-   variable_name = args_file.get('Args').get('variablename')
-   start_date = args_file.get('Args').get('timespan').get('startDate')
-   end_date = args_file.get('Args').get('timespan').get('endDate')
+    """Calculates the monthly mean.
 
-   ds = xr.open_dataset(product)
-   result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.month').mean(dim='time')
+    Arguments:
+        args_file {YAML python object} -- YAML object encapsulating the parameters passed to monthly_mean method
+    Returns:
+        xarray.DataArray
+    """
+    product = args_file.get('Args').get('product')
+    variable_name = args_file.get('Args').get('variablename')
+    start_date = args_file.get('Args').get('timespan').get('startDate')
+    end_date = args_file.get('Args').get('timespan').get('endDate')
 
-   return result
+    ds = xr.open_dataset(product)
+    #The issue with groupby is that it will aggregate the complete dataset down to 12 months. So if you have 2 years
+    #worth of data, you probably want to get 24 monthly means and not 12.
+    #    result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.month').mean(dim='time')
+
+    #resampling needs a dataset object to maintain the expected dimensions. we need to again
+    #  'select' the variable before the result is returned to convert the dataset to dataarray.
+    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
+                .to_dataset().resample(time='1M').mean()[variable_name]
+
+    return result
 
 def yearly_mean(args_file):
-   """Calculates the monthly mean.
-   
-   Arguments:
-       args_file {[YAML python object]} -- [YAML object encapsulating the parameters passed to monthly_mean method]
-   """
-   product = args_file.get('Args').get('product')
-   variable_name = args_file.get('Args').get('variablename')   
-   start_date = args_file.get('Args').get('timespan').get('startDate')
-   end_date = args_file.get('Args').get('timespan').get('endDate')
+    """Calculates the yearly mean.
 
-   ds = xr.open_dataset(product)
-   result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.year').mean(dim='time')
+    Arguments:
+        args_file {YAML python object} -- YAML object encapsulating the parameters passed to yearly_mean method
+    Returns:
+        xarray.DataArray
+    """
+    product = args_file.get('Args').get('product')
+    variable_name = args_file.get('Args').get('variablename')   
+    start_date = args_file.get('Args').get('timespan').get('startDate')
+    end_date = args_file.get('Args').get('timespan').get('endDate')
 
-   return result
+    ds = xr.open_dataset(product)
+
+    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
+                .to_dataset().resample(time='1y').mean()[variable_name]
+    return result
 
 def mean_all_odc(product, timespan, spatial_extents, projection, resolution):
     '''
