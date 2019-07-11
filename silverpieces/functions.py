@@ -102,11 +102,11 @@ def mean_catchment_mask_number_xr(ds, start_date, end_date, variable_name, catch
    return result
 
 
+def to_datetime(*dts):
+    return tuple([pd.to_datetime(x) for x in dts])
+
 def get_first_period(start_record, end_record, start_period, end_period):
-    start_record = pd.to_datetime(start_record)
-    end_record = pd.to_datetime(end_record)
-    start_period = pd.to_datetime(start_period)
-    end_period = pd.to_datetime(end_period)
+    start_record, end_record, start_period, end_period = to_datetime(start_record, end_record, start_period, end_period)
     pspan = end_period - start_period
     delta_year = relativedelta(years=1)
     # what is the first day of year of the start of the period that fits the record?
@@ -119,10 +119,7 @@ def get_first_period(start_record, end_record, start_period, end_period):
     return (d, e)
 
 def max_shifting_years(start_record, end_record, start_period, end_period):
-    start_record = pd.to_datetime(start_record)
-    end_record = pd.to_datetime(end_record)
-    start_period = pd.to_datetime(start_period)
-    end_period = pd.to_datetime(end_period)
+    start_record, end_record, start_period, end_period = to_datetime(start_record, end_record, start_period, end_period)
     delta_year = relativedelta(years=1)
     # what is the first 'day of year' of the start of the period that fits the record?
     d, _ = get_first_period(start_record, end_record, start_period, end_period)
