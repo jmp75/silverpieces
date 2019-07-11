@@ -102,6 +102,108 @@ class TestStatMethods(unittest.TestCase):
         except yaml.YAMLError as exc:
             print(exc)
 
+    def test_seasonal_mean(self):
+        print("current Directory is:",os.getcwd())    
+        try:
+            ymlStr = """Args: 
+                            product: 'AWRA' #fill in the name of the test file created with dummy data
+                            timespan:
+                                startDate:  
+                                endDate:  
+                            variablename: 'band'"""
+            args_file = yaml.safe_load(ymlStr)
+            t,x,y,src_data=get_data_src_seq(nt=730,nx=3,ny=2)
+            f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band')
+
+            #replace the product name with filename with dummy data
+            args_file['Args']['product'] = f.name
+            result = functions.seasonal_mean(args_file)
+            seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
+            seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
+            #for the last period, it jumps over to feb/2012 even when we have data till dec/2011
+            #but for averaging it only considers the days when we have data
+            seasonal_2012_feb_mean = np.arange(699,730).sum()/31
+            
+            
+            self.assertEqual(result[0][0][0], seasonal_2010_feb_mean)
+            self.assertEqual(result[1][0][0], seasonal_2010_may_mean)
+            self.assertEqual(result[8][0][0], seasonal_2012_feb_mean)
+            self.assertEqual(result.shape, (9, 3, 2))          
+            
+            #The time dimension changes to year only when we use groupby functionality
+            #for calculating means.
+            #self.assertEqual(result.dims[0], 'year')
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    def test_seasonal_mean_partial_dataset1(self):
+        print("current Directory is:",os.getcwd())    
+        try:
+            ymlStr = """Args: 
+                            product: 'AWRA' #fill in the name of the test file created with dummy data
+                            timespan:
+                                startDate:  
+                                endDate:  2010-12-31
+                            variablename: 'band'"""
+            args_file = yaml.safe_load(ymlStr)
+            t,x,y,src_data=get_data_src_seq(nt=730,nx=3,ny=2)
+            f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band')
+
+            #replace the product name with filename with dummy data
+            args_file['Args']['product'] = f.name
+            result = functions.seasonal_mean(args_file)
+            seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
+            seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
+            #for the last period, it jumps over to feb/2011 as the time boundary even when we have requested till dec/2011.
+            #But for averaging it only considers the days falling in the date bounds.
+            seasonal_2011_feb_mean = np.arange(334,365).sum()/31
+            
+            
+            self.assertEqual(result[0][0][0], seasonal_2010_feb_mean)
+            self.assertEqual(result[1][0][0], seasonal_2010_may_mean)
+            self.assertEqual(result[4][0][0], seasonal_2011_feb_mean)
+            self.assertEqual(result.shape, (5, 3, 2))          
+            
+            #The time dimension changes to year only when we use groupby functionality
+            #for calculating means.
+            #self.assertEqual(result.dims[0], 'year')
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    def test_seasonal_mean_partial_dataset2(self):
+        print("current Directory is:",os.getcwd())    
+        try:
+            ymlStr = """Args: 
+                            product: 'AWRA' #fill in the name of the test file created with dummy data
+                            timespan:
+                                startDate:  
+                                endDate:  2010-12-30
+                            variablename: 'band'"""
+            args_file = yaml.safe_load(ymlStr)
+            t,x,y,src_data=get_data_src_seq(nt=730,nx=3,ny=2)
+            f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band')
+
+            #replace the product name with filename with dummy data
+            args_file['Args']['product'] = f.name
+            result = functions.seasonal_mean(args_file)
+            seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
+            seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
+            #for the last period, it jumps over to feb/2011 as the time boundary even when we have requested till dec/2011.
+            #But for averaging it only considers the days falling in the date bounds.
+            seasonal_2011_feb_mean = np.arange(334,364).sum()/30
+            
+            
+            self.assertEqual(result[0][0][0], seasonal_2010_feb_mean)
+            self.assertEqual(result[1][0][0], seasonal_2010_may_mean)
+            self.assertEqual(result[4][0][0], seasonal_2011_feb_mean)
+            self.assertEqual(result.shape, (5, 3, 2))          
+            
+            #The time dimension changes to year only when we use groupby functionality
+            #for calculating means.
+            #self.assertEqual(result.dims[0], 'year')
+        except yaml.YAMLError as exc:
+            print(exc)
+
 if __name__ == '__main__':
     unittest.main()
 

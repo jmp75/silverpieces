@@ -49,6 +49,25 @@ def yearly_mean(args_file):
                 .to_dataset().resample(time='1y').mean()[variable_name]
     return result
 
+def seasonal_mean(args_file):
+    """Calculates the seasonal mean.
+
+    Arguments:
+        args_file {YAML python object} -- YAML object encapsulating the parameters passed to seasonal_mean method
+    Returns:
+        xarray.DataArray
+    """
+    product = args_file.get('Args').get('product')
+    variable_name = args_file.get('Args').get('variablename')   
+    start_date = args_file.get('Args').get('timespan').get('startDate')
+    end_date = args_file.get('Args').get('timespan').get('endDate')
+
+    ds = xr.open_dataset(product)
+
+    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
+                .to_dataset().resample(time='Q-FEB').mean()[variable_name]
+    return result
+
 def mean_all_odc(product, timespan, spatial_extents, projection, resolution):
     '''
     get product from data cube with specified resolution and projection
