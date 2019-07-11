@@ -46,23 +46,23 @@ def test_num_year_detection():
     assert max_shifting_years('2001-01-01', '2003-12-30', '2001-01-01', '2002-12-31') == 0
 
 
-def test_rolling_years_stats():
+def test_periods_stat_summary_stats():
     start_time = pd.to_datetime('2001-01-01')
     end_time = pd.to_datetime('2002-12-31')
     x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
     s = SpatialTemporalDataArrayStat()
-    y = s.rolling_years(x, '2001-01-01', '2002-12-31')
+    y = s.periods_stat_summary(x, '2001-01-01', '2002-12-31')
     assert len(y.time) == (9 - 2 + 1)
     tdim = y[s.time_dimname].values
     assert pd.to_datetime(tdim[0] ) == end_time
     assert pd.to_datetime(tdim[-1]) == pd.to_datetime('2009-12-31')
     assert np.all(y[0,:,:] == 365 * 1.0)
     assert np.all(y[1,:,:] == 365 * (1.0 + 2.0))
-    y = s.rolling_years(x, '2001-01-01', '2002-12-31', n_years = None, func = np.mean)
+    y = s.periods_stat_summary(x, '2001-01-01', '2002-12-31', func = np.mean)
     assert np.all(y[0,:,:] == 0.5)
     assert np.all(y[1,:,:] == 1.5)
 
-    y = s.rolling_years(x, '2004-01-01', '2005-12-31')
+    y = s.periods_stat_summary(x, '2004-01-01', '2005-12-31')
     assert len(y.time) == (9 - 2 + 1)
     tdim = y[s.time_dimname].values
     assert pd.to_datetime(tdim[0] ) == end_time
@@ -72,7 +72,7 @@ def test_quantiles_dc():
     end_time = pd.to_datetime('2002-12-31')
     x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
     s = SpatialTemporalDataArrayStat()
-    y = s.rolling_years(x, '2001-01-01', '2002-12-31')
+    y = s.periods_stat_summary(x, '2001-01-01', '2002-12-31')
     q = np.array([.1, .5, .9])
     qs = s.quantile_over_time_dim(y, q)
     z = y[0,:,:].copy()
@@ -87,5 +87,5 @@ def test_quantiles_dc():
     assert np.all(cat_q[2,:] == 2)
 
 # test_num_year_detection()
-# test_rolling_years_stats()
+# test_periods_stat_summary_stats()
 # test_quantiles_dc()

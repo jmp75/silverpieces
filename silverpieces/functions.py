@@ -146,7 +146,7 @@ class SpatialTemporalDataDescriptor(object):
         time_dimname (str):
     """
     def __init__(self, x_dimname='lon', y_dimname='lat', time_dimname='time'):
-        """Define class names of interest in visualised data set, and color coding.
+        """Define a map of dimension names for X-Y-T gridded data sets.
 
         Args:
             x_dimname (str):
@@ -165,16 +165,20 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
     """
     def __init__(self, x_dimname='lon', y_dimname='lat', time_dimname='time'):
         super(SpatialTemporalDataArrayStat, self).__init__(x_dimname, y_dimname, time_dimname)
-        """Define class names of interest in visualised data set, and color coding.
+        """Define a map of dimension names for X-Y-T gridded data sets.
         
         Args:
-        x_dimname (str):
-        y_dimname (str):
-        time_dimname (str):
+            x_dimname (str):
+            y_dimname (str):
+            time_dimname (str):
         """
-    def _max_num_years_shift(self, x, start_time, end_time):
+    def _extrema_time_dim(self, x):
         tdim = x[self.time_dimname].values
-        return max_shifting_years(tdim[0], tdim[-1], start_time, end_time)
+        return (tdim[0], tdim[-1])
+
+    def _max_num_years_shift(self, x, start_time, end_time):
+        tmin, tmax = self._extrema_time_dim(x)
+        return max_shifting_years(tmin, tmax, start_time, end_time)
 
     def _apply_timeslice(self, x, start_time, end_time, func = np.sum):
         y = x.loc[{ self.time_dimname: slice(start_time, end_time) }]
@@ -183,25 +187,66 @@ class SpatialTemporalDataArrayStat(SpatialTemporalDataDescriptor):
                         #kwargs={'axis': -1, 'skipna':False})
                         kwargs={'axis': -1})
         
-    def rolling_years(self, x, start_time, end_time, n_years = None, func = np.sum): 
-        start_time = pd.to_datetime(start_time)
-        end_time = pd.to_datetime(end_time)
-        if n_years is None:
-            n_years = self._max_num_years_shift(x, start_time, end_time) + 1
+    def periods_stat_summary(self, x, start_time, end_time, func = np.sum, start_record = None, end_record = None): 
+        """Statistical summary/summaries over periods within an X-Y-T data array. 
+        
+        Args:
+            x (xr.DataArray): X-Y-T data array with dimension names compatible with this object
+            start_time (valid type for pd.to_datetime): start time of a period of interest
+            end_time (valid type for pd.to_datetime): end time of a period of interest
+            func (callable): function callable with a signature similar to numpy.sum
+            start_record (valid type for pd.to_datetime): optional, start time of 
+                the window of record to use for statistics. Lower time bound of x if None.
+            end_record (valid type for pd.to_datetime): optional, end time of the window 
+                of record to use for statistics. Upper time bound of x if None.
+
+        Examples:
+
+            >>> x = create_daily_sp_cube('2001-01-01', '2009-12-31', nx=2, ny=3, fun_fill=fill_year)
+            >>> s = SpatialTemporalDataArrayStat()
+            >>> y = s.periods_stat_summary(x, '2001-04-01', '2001-08-31')
+            >>> y.name = 'southern autumn/winter sums'
+            >>> x.shape
+            (3287, 3, 2)
+            >>> y.shape
+            (9, 3, 2)
+
+        """
+        start_time, end_time = to_datetime(start_time, end_time)
+        tmin, tmax = self._extrema_time_dim(x)
+        # TODO more stringent input arg checks.
+        if start_record is None:
+            start_record = tmin
+        if end_record is None:
+            end_record = tmax
+        max_years_shift = max_shifting_years(start_record, end_record, start_time, end_time) + 1
         td = x[self.time_dimname].values
         start_record = td[0]
         end_record = td[-1]
         d, e = get_first_period(start_record, end_record, start_time, end_time)    
-        cumulated = [self._apply_timeslice(x, d + relativedelta(years=year), e + relativedelta(years=year), func) for year in range(n_years)]
+        cumulated = [self._apply_timeslice(x, d + relativedelta(years=year), e + relativedelta(years=year), func) for year in range(max_years_shift)]
         y = xr.concat(cumulated, dim=self.time_dimname)
         # maybe an optional arg for the resulting time dimension (start or end of periods)
-        y[self.time_dimname] = np.array([pd.to_datetime(e + relativedelta(years=year)) for year in range(n_years)])
+        y[self.time_dimname] = np.array([pd.to_datetime(e + relativedelta(years=year)) for year in range(max_years_shift)])
         return y
 
     def quantile_over_time_dim(self, x, q, interpolation = 'linear', keep_attrs=None):
+        """Compute the qth quantile of the data along the Time dimension of an X-Y-T data array. 
+        
+        Args:
+            x (xr.DataArray): X-Y-T data array with dimension names compatible with this object
+            q (list of floats): probabilities, 0 to 1.
+        """
         return x.quantile(q=q, dim=[self.time_dimname], interpolation=interpolation, keep_attrs=keep_attrs)            
 
     def searchsorted(self, q_values, x):
+        """Find indices where elements should be inserted to maintain order. 
+            Used to classify gridded values against gridded quantile values. 
+        
+        Args:
+            q (xr.DataArray): X-Y-Q data array with Q quantile values.
+            x (xr.DataArray): X-Y data array with dimension names compatible with this object
+        """
         nlon = len(q_values[self.x_dimname])
         nlat = len(q_values[self.y_dimname])
         xresult = x.copy()
