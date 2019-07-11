@@ -10,7 +10,7 @@ source ~/anaconda3/bin/activate
 my_env_name=DCX
 conda create --name ${my_env_name} python=3.7
 conda activate ${my_env_name}
-conda install --name ${my_env_name} requests xarray dask matplotlib netCDF4 
+conda install --name ${my_env_name} requests xarray dask matplotlib netCDF4 pytest
 conda install --name ${my_env_name} seaborn
 pip install siphon # not in conda, and wary to tap conda-forge
 conda install --name ${my_env_name} jupyterlab ipywidgets jupyter

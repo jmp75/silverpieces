@@ -1,5 +1,7 @@
 xarray
+pyaml
 python-dateutil
+netcdf4
 # Bumping requirements up to what I can see from `conda list`; otherwise old numpy on e.g. travis known to cause issues
 # It may be possible to lower version requirements but I do not have time to chase that rabbit up down the python version holes.
 numpy>=1.15.1

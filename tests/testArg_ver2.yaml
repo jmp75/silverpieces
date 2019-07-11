@@ -1,6 +1,0 @@
-Args: 
-    product: 'AWRA' #fill in the name of the test file created with dummy data
-    timespan:
-        startDate:  '2011-01-01'
-        endDate:  '2011-12-31'
-    variablename: 'band'
