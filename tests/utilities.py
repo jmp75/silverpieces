@@ -5,7 +5,7 @@ import numpy as np
 from netCDF4 import Dataset
 from tempfile import NamedTemporaryFile
 
-def create_file(d1,d1_name,d2,d2_name,d3,d3_name,val,varname,**args):
+def create_file(d1,d1_name,d2,d2_name,d3,d3_name,val,varname,year=2010,**args):
     global tmp_file 
     
     try:  
@@ -22,7 +22,7 @@ def create_file(d1,d1_name,d2,d2_name,d3,d3_name,val,varname,**args):
     
     fw.createDimension(d1_name, None) #len(d1))         
     dim_wrt=fw.createVariable(d1_name,d1.dtype,d1_name) 
-    dim_wrt.units = 'days since 2010-01-01 00:00:00'  
+    dim_wrt.units = 'days since %s-01-01 00:00:00' % year
     dim_wrt.calendar = 'gregorian'  
     dim_wrt[:]=d1                                       
 
@@ -58,6 +58,17 @@ def get_data_src_seq(nt=365, nx=3, ny=2):
     t = np.arange(nt)
     x = np.arange(nx)
     y = np.arange(ny)
+    data = np.arange(nt*nx*ny).reshape(nt, nx, ny)
+    for i in range(nt):
+        data[i] = np.linspace(i,i,num=nx*ny).reshape(nx, ny)
+    return t, x, y, data
+    
+def get_spatial_data_src_seq(t, lat_start=0, lat_end=10, lat_size=11, lon_start=1, lon_end=10, lon_size=11):
+    nt = len(t)
+    x = np.linspace(lat_start, lat_end, num=lat_size)
+    y = np.linspace(lon_start, lon_end, num=lon_size)
+    nx = lat_size 
+    ny = lon_size 
     data = np.arange(nt*nx*ny).reshape(nt, nx, ny)
     for i in range(nt):
         data[i] = np.linspace(i,i,num=nx*ny).reshape(nx, ny)
