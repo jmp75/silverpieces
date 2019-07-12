@@ -1,13 +1,16 @@
 from enum import Enum
 
+
 class Statistic(Enum):
     Sum = 1
     Mean = 2
+
 
 class TimePeriod(Enum):
     Monthly = '1M'
     Yearly = '1y'
     Seasonal = 'Q-FEB'
+
 
 class Utility:
     def __init__(self):
@@ -16,14 +19,14 @@ class Utility:
     @staticmethod
     def Apply_stat(ds, start_date, end_date, variable_name, statistic, time_period):
         result = ds.sel(time=slice(start_date, end_date))[variable_name] \
-                    .to_dataset().resample(time=time_period.value)
-                    
+            .to_dataset().resample(time=time_period.value)
+
         if statistic == Statistic.Mean:
             result = result.mean()[variable_name]
         elif statistic == Statistic.Sum:
             result = result.Sum()[variable_name]
 
-        return result    
+        return result
 
     @staticmethod
     def read_yml_params(args_file):
