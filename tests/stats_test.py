@@ -8,9 +8,10 @@ import sys
 import yaml
 #importing numpy causes debugging to stop working! Actually seems like any C based python packages causes the debugger to fail.
 #import numpy as np
-dir_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(dir_path, '..', 'silverpieces'))
-import functions  
+root_pkg_dir = os.path.join(os.path.dirname(__file__),'..')
+sys.path.append(root_pkg_dir)
+
+from silverpieces.functions import *
 from utilities import *
 
 class TestStatMethods(unittest.TestCase):
@@ -36,7 +37,7 @@ class TestStatMethods(unittest.TestCase):
 
                 #replace the product name with filename with dummy data
                 args_file['Args']['product'] = f.name
-                result = functions.monthly_mean(args_file)
+                result = monthly_mean(args_file)
                 jan_mean = np.arange(0,31).sum()/31
                 feb_mean = np.arange(31,59).sum()/28
                 
@@ -70,7 +71,7 @@ class TestStatMethods(unittest.TestCase):
 
             #replace the product name with filename with dummy data
             args_file['Args']['product'] = f.name
-            result = functions.monthly_mean(args_file)
+            result = monthly_mean(args_file)
             jan_mean = np.arange(0,31).sum()/31
             feb_mean = np.arange(31,59).sum()/28
 
@@ -99,7 +100,7 @@ class TestStatMethods(unittest.TestCase):
 
             #replace the product name with filename with dummy data
             args_file['Args']['product'] = f.name
-            result = functions.yearly_mean(args_file)
+            result = yearly_mean(args_file)
             yearly_2010_mean = np.arange(0,365).sum()/365
             yearly_2011_mean = np.arange(365,730).sum()/365
             
@@ -132,7 +133,7 @@ class TestStatMethods(unittest.TestCase):
 
             #replace the product name with filename with dummy data
             args_file['Args']['product'] = f.name
-            result = functions.seasonal_mean(args_file)
+            result = seasonal_mean(args_file)
             seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
             seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
             #for the last period, it jumps over to feb/2012 even when we have data till dec/2011
@@ -169,7 +170,7 @@ class TestStatMethods(unittest.TestCase):
 
             #replace the product name with filename with dummy data
             args_file['Args']['product'] = f.name
-            result = functions.seasonal_mean(args_file)
+            result = seasonal_mean(args_file)
             seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
             seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
             #for the last period, it jumps over to feb/2011 as the time boundary even when we have requested till dec/2011.
@@ -206,7 +207,7 @@ class TestStatMethods(unittest.TestCase):
 
             #replace the product name with filename with dummy data
             args_file['Args']['product'] = f.name
-            result = functions.seasonal_mean(args_file)
+            result = seasonal_mean(args_file)
             seasonal_2010_feb_mean = np.arange(0,59).sum()/(31+28)
             seasonal_2010_may_mean = np.arange(59,59+31+30+31).sum()/(31+30+31)
             #for the last period, it jumps over to feb/2011 as the time boundary even when we have requested till dec/2011.

@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
-from silverpieces.utility import Utility
+from silverpieces.utility import *
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
@@ -15,17 +15,12 @@ def monthly_mean(args_file):
         xarray.DataArray
     """
     product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    stat = Statistic.Mean
+    time = TimePeriod.Monthly
 
     ds = xr.open_dataset(product)
-    #The issue with groupby is that it will aggregate the complete dataset down to 12 months. So if you have 2 years
-    #worth of data, you probably want to get 24 monthly means and not 12.
-    #    result = ds.sel(time=slice(start_date, end_date))[variable_name].groupby('time.month').mean(dim='time')
 
-    #resampling needs a dataset object to maintain the expected dimensions. we need to again
-    #  'select' the variable before the result is returned to convert the dataset to dataarray.
-    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
-                .to_dataset().resample(time='1M').mean()[variable_name]
-
+    result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
 
 def yearly_mean(args_file):
@@ -37,12 +32,14 @@ def yearly_mean(args_file):
         xarray.DataArray
     """
     product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    stat = Statistic.Mean
+    time = TimePeriod.Yearly
 
     ds = xr.open_dataset(product)
 
-    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
-                .to_dataset().resample(time='1y').mean()[variable_name]
+    result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
+
 
 def seasonal_mean(args_file):
     """Calculates the seasonal mean.
@@ -53,11 +50,12 @@ def seasonal_mean(args_file):
         xarray.DataArray
     """
     product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    stat = Statistic.Mean
+    time = TimePeriod.Seasonal
 
     ds = xr.open_dataset(product)
 
-    result = ds.sel(time=slice(start_date, end_date))[variable_name] \
-                .to_dataset().resample(time='Q-FEB').mean()[variable_name]
+    result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
 
 def mean_all_odc(product, timespan, spatial_extents, projection, resolution):
