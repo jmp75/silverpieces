@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 from silverpieces.utility import *
+import salem
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
@@ -19,6 +20,7 @@ def monthly_mean(args_file):
     time = TimePeriod.Monthly
 
     ds = xr.open_dataset(product)
+    # ds = CookieCut_ShapeFile(ds, shapeFile)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
