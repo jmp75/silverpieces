@@ -27,6 +27,10 @@ pip install silverpieces
 
 ### Example
 
+Notebooks provide some examples of usage
+
+Running `docker-compose up` will create a docker container running on jupyter port 8199 containing the examples 
+
 ## Related work
 
 ### Other python packages
