@@ -7,8 +7,7 @@ import os
 import sys
 import yaml
 import xarray as xr
-#importing numpy causes debugging to stop working! Actually seems like any C based python packages causes the debugger to fail.
-#import numpy as np
+
 root_pkg_dir = os.path.join(os.path.dirname(__file__),'..')
 sys.path.append(root_pkg_dir)
 
