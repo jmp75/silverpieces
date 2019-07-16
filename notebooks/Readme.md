@@ -16,6 +16,9 @@ conda install -c conda-forge --name ${my_env_name} requests xarray dask matplotl
 conda install -c conda-forge --name ${my_env_name} seaborn
 conda install -c conda-forge --name ${my_env_name} siphon 
 
+conda install -c oggm -c conda-forge ${my_env_name} salem  # may be slow to install FYI. Be patient.
+# you do need `-c oggm -c conda-forge` otherwise if only oggm there may be a unsatisfied dependency kerfuffle
+
 # optional?
 conda install -c conda-forge --name ${my_env_name} rasterio geopandas
 
