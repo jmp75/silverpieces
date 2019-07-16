@@ -1,0 +1,9 @@
+version: '3'
+services:
+  silvernote:
+    build: notebooks/.
+    volumes:
+      - .:/silverpieces
+    ports:
+      - "8199:8888"
+    command: "/bin/bash -c 'source activate silvernote &&  jupyter-labextension install @jupyter-widgets/jupyterlab-manager && jupyter notebook --allow-root --no-browser --ip=0.0.0.0 --NotebookApp.token=\"\" --NotebookApp.password=\"\"'"
