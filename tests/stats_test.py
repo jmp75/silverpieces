@@ -7,8 +7,7 @@ import os
 import sys
 import yaml
 import xarray as xr
-#importing numpy causes debugging to stop working! Actually seems like any C based python packages causes the debugger to fail.
-#import numpy as np
+
 root_pkg_dir = os.path.join(os.path.dirname(__file__),'..')
 sys.path.append(root_pkg_dir)
 
@@ -21,29 +20,35 @@ class TestStatMethods(unittest.TestCase):
         try:
             t, x, y, src_data = get_data_src_seq(nt=5, nx=3, ny=2)
             f = create_file(t, 't', x, 'latitude', y, 'longitude', src_data, 'band')
-            band = read_var(f.name, 'band')
+            band = read_var(f, 'band')
             self.assertEqual(band.shape, (5, 3, 2))
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
     
     def test_dummy_xarray_read(self):
         from calendar import monthrange 
-        year = 2011
-        day_offsets = [0]
-        for i in range(2, 12):
-            day_offsets.append(day_offsets[-1] + monthrange(year, i)[1])
-        day_offsets = np.array(day_offsets)
-        t,x,y,src_data=get_spatial_data_src_seq(t=day_offsets, lat_start=-10.0, lat_end=-44.0, lat_size=681, lon_start=112.0, lon_end=154.0, lon_size=841)
-        f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band', year)
-        ds = xr.open_dataset(f.name)
-        self.assertAlmostEqual(ds.latitude.values.min(), -44.0)
-        self.assertAlmostEqual(ds.latitude.values.max(), -10.0)
-        self.assertAlmostEqual(ds.longitude.values.min(), 112.0)
-        self.assertAlmostEqual(ds.longitude.values.max(), 154.0)
-        self.assertEqual(len(ds.latitude), 681)
-        self.assertEqual(len(ds.longitude), 841)
-
+        try:
+            year = 2011
+            day_offsets = [0]
+            for i in range(2, 12):
+                day_offsets.append(day_offsets[-1] + monthrange(year, i)[1])
+            day_offsets = np.array(day_offsets)
+            t,x,y,src_data=get_spatial_data_src_seq(t=day_offsets, lat_start=-10.0, lat_end=-44.0, lat_size=681, lon_start=112.0, lon_end=154.0, lon_size=841)
+            f=create_file(t,'time',x,'latitude',y,'longitude',src_data,'band', year)
+            with xr.open_dataset(f) as ds:
+                self.assertAlmostEqual(ds.latitude.values.min(), -44.0)
+                self.assertAlmostEqual(ds.latitude.values.max(), -10.0)
+                self.assertAlmostEqual(ds.longitude.values.min(), 112.0)
+                self.assertAlmostEqual(ds.longitude.values.max(), 154.0)
+                self.assertEqual(len(ds.latitude), 681)
+                self.assertEqual(len(ds.longitude), 841)
+        except Exception as ex:
+            print(ex)
+        finally:
+            os.unlink(f)
+    
     def test_monthly_mean(self):
         print("current Directory is:", os.getcwd())
         with open("./tests/testArg.yaml", 'r') as stream:
@@ -65,11 +70,10 @@ class TestStatMethods(unittest.TestCase):
                 #The time dimension changes to month only when we use groupby functionality
                 #for calculating means.
                 # self.assertEqual(result.dims[0], 'month')
-            except yaml.YAMLError as exc:
-                print(exc)
+            except Exception as ex:
+                print(ex)
             finally:
-                f.close()
-                os.unlink(f.name)
+                os.unlink(f)
 
     def test_monthly_mean_over_multiple_years(self):
         print("current Directory is:", os.getcwd())
@@ -95,11 +99,10 @@ class TestStatMethods(unittest.TestCase):
             self.assertEqual(result[1][0][0], feb_mean)
             self.assertEqual(result.shape, (24, 3, 2))
             # self.assertEqual(result.dims[0], 'month')
-        except yaml.YAMLError as exc:
-            print(exc)
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
 
     def test_yearly_mean(self):
         print("current Directory is:", os.getcwd())
@@ -127,11 +130,10 @@ class TestStatMethods(unittest.TestCase):
             #The time dimension changes to year only when we use groupby functionality
             #for calculating means.
             #self.assertEqual(result.dims[0], 'year')
-        except yaml.YAMLError as exc:
-            print(exc)
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
 
     def test_seasonal_mean(self):
         print("current Directory is:",os.getcwd())    
@@ -164,11 +166,10 @@ class TestStatMethods(unittest.TestCase):
             #The time dimension changes to year only when we use groupby functionality
             #for calculating means.
             #self.assertEqual(result.dims[0], 'year')
-        except yaml.YAMLError as exc:
-            print(exc)
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
 
     def test_seasonal_mean_partial_dataset1(self):
         print("current Directory is:", os.getcwd())
@@ -201,11 +202,10 @@ class TestStatMethods(unittest.TestCase):
             #The time dimension changes to year only when we use groupby functionality
             #for calculating means.
             #self.assertEqual(result.dims[0], 'year')
-        except yaml.YAMLError as exc:
-            print(exc)
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
 
     def test_seasonal_mean_partial_dataset2(self):
         print("current Directory is:", os.getcwd())
@@ -238,11 +238,10 @@ class TestStatMethods(unittest.TestCase):
             #The time dimension changes to year only when we use groupby functionality
             #for calculating means.
             #self.assertEqual(result.dims[0], 'year')
-        except yaml.YAMLError as exc:
-            print(exc)
+        except Exception as ex:
+            print(ex)
         finally:
-            f.close()
-            os.unlink(f.name)
+            os.unlink(f)
 
 
 if __name__ == '__main__':
