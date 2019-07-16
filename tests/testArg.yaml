@@ -1,5 +1,5 @@
 Args: 
-    product: 'AWRA' #fill in the name of the test file created with dummy data
+    product: 'AWRA' #fill in the name of the directory with test files so that xr.open_mfdataset api can be used load files
     timespan:
         startDate:  '2010-01-01'
         endDate:  '2010-02-28'

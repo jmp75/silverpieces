@@ -6,6 +6,18 @@ from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 from silverpieces.utility import *
 import salem
+import os
+
+def GetDataSet(product, shape_file):
+    ds = xr.open_dataset(product)
+    if shape_file:
+        ds = CookieCut_ShapeFile(ds, shape_file)
+    return ds
+
+def CookieCut_ShapeFile(ds, shapeFile):
+    shdf = salem.read_shapefile(shapeFile)
+    ds_subset = ds.salem.subset(shape=shdf)
+    return ds_subset
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
@@ -15,14 +27,16 @@ def monthly_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    product, start_date, end_date, variable_name, shape_file = Utility.read_yml_params(args_file)
     stat = Statistic.Mean
     time = TimePeriod.Monthly
+     
 
-    ds = xr.open_dataset(product)
-    # ds = CookieCut_ShapeFile(ds, shapeFile)
+    ds = GetDataSet(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
+    ds.close()
+    result.close()
     return result
 
 def yearly_mean(args_file):
@@ -33,11 +47,11 @@ def yearly_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    product, start_date, end_date, variable_name, shape_file = Utility.read_yml_params(args_file)
     stat = Statistic.Mean
     time = TimePeriod.Yearly
 
-    ds = xr.open_dataset(product)
+    ds = GetDataSet(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
@@ -51,11 +65,11 @@ def seasonal_mean(args_file):
     Returns:
         xarray.DataArray
     """
-    product, start_date, end_date, variable_name = Utility.read_yml_params(args_file)
+    product, start_date, end_date, variable_name, shape_file = Utility.read_yml_params(args_file)
     stat = Statistic.Mean
     time = TimePeriod.Seasonal
 
-    ds = xr.open_dataset(product)
+    ds = GetDataSet(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
