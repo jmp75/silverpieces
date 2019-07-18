@@ -8,15 +8,15 @@ from silverpieces.utility import *
 import salem
 import os
 
-def GetDataSet(product, shape_file):
+def get_data_set(product, shape_file):
     ds = xr.open_dataset(product)
     if shape_file:
-        ds = CookieCut_ShapeFile(ds, shape_file)
+        ds = cookie_cut_shapefile(ds, shape_file)
     return ds
 
-def CookieCut_ShapeFile(ds, shapeFile):
+def cookie_cut_shapefile(ds, shapeFile):
     shdf = salem.read_shapefile(shapeFile)
-    ds_subset = ds.salem.subset(shape=shdf)
+    ds_subset = ds.salem.roi(shape=shdf)
     return ds_subset
 
 def monthly_mean(args_file):
