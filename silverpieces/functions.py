@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta # $ pip install python-dateutil
 from datetime import date
 from silverpieces.utility import *
+import regionmask
 import salem
 import os
 
@@ -19,6 +20,23 @@ def cookie_cut_shapefile(ds, shapeFile):
     ds_subset = ds.salem.subset(shape=shdf)
     ds_roi = ds_subset.salem.roi(shape=shdf)
     return ds_roi
+
+def _generate_rmask(geopandas_dataframe, column_name):
+    '''
+    using a geopandas dataframe extract out geometries and some metadata from every row
+    create a mask where a numerical lookup corresponds to each column value 
+    '''
+    names = geopandas_dataframe.getattr(column_name).values
+    numbers = range(0, len(names)) 
+    abbreviations = names 
+    geometries = geopandas_dataframe.geometry.values
+    return regionmask.Regions_cls('Mask', numbers, names, abbreviations, geometries)
+
+def _generate_masked_xarray(dataset, regionmask, mask_dimension_name):
+    '''
+    Appply a regionmask mask to a xarray dataset to create a new dimension 
+    which is a number corresponding  
+    '''
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
