@@ -24,6 +24,7 @@ class TestStatMethods(unittest.TestCase):
             self.assertEqual(band.shape, (5, 3, 2))
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
     
@@ -46,6 +47,7 @@ class TestStatMethods(unittest.TestCase):
                 self.assertEqual(len(ds.longitude), 841)
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
     
@@ -71,8 +73,8 @@ class TestStatMethods(unittest.TestCase):
                 # self.assertEqual(result.dims[0], 'month')
             except Exception as ex:
                 print(ex)
+                self.fail(ex)
             finally:
-                result.close()
                 os.unlink(f)
 
     def test_monthly_mean_over_multiple_years(self):
@@ -100,6 +102,7 @@ class TestStatMethods(unittest.TestCase):
             # self.assertEqual(result.dims[0], 'month')
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
 
@@ -130,6 +133,7 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
 
@@ -165,6 +169,7 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
 
@@ -200,6 +205,7 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
 
@@ -235,6 +241,7 @@ class TestStatMethods(unittest.TestCase):
             #self.assertEqual(result.dims[0], 'year')
         except Exception as ex:
             print(ex)
+            self.fail(ex)
         finally:
             os.unlink(f)
 
