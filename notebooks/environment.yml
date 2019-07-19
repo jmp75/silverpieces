@@ -48,3 +48,5 @@ dependencies:
     - jupyter-server-proxy
     - dask-labextension==0.3.1
     - git+https://github.com/NCAR/intake-thredds
+    - regionmask
+    - geojson
