@@ -8,16 +8,17 @@ from silverpieces.utility import *
 import salem
 import os
 
-def GetDataSet(product, shape_file):
+def get_data_set(product, shape_file):
     ds = xr.open_dataset(product)
     if shape_file:
-        ds = CookieCut_ShapeFile(ds, shape_file)
+        ds = cookie_cut_shapefile(ds, shape_file)
     return ds
 
-def CookieCut_ShapeFile(ds, shapeFile):
+def cookie_cut_shapefile(ds, shapeFile):
     shdf = salem.read_shapefile(shapeFile)
     ds_subset = ds.salem.subset(shape=shdf)
-    return ds_subset
+    ds_roi = ds_subset.salem.roi(shape=shdf)
+    return ds_roi
 
 def monthly_mean(args_file):
     """Calculates the monthly mean.
@@ -32,7 +33,7 @@ def monthly_mean(args_file):
     time = TimePeriod.Monthly
      
 
-    ds = GetDataSet(product, shape_file)
+    ds = get_data_set(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     ds.close()
@@ -51,7 +52,7 @@ def yearly_mean(args_file):
     stat = Statistic.Mean
     time = TimePeriod.Yearly
 
-    ds = GetDataSet(product, shape_file)
+    ds = get_data_set(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
@@ -69,7 +70,7 @@ def seasonal_mean(args_file):
     stat = Statistic.Mean
     time = TimePeriod.Seasonal
 
-    ds = GetDataSet(product, shape_file)
+    ds = get_data_set(product, shape_file)
 
     result = Utility.Apply_stat(ds, start_date, end_date, variable_name, stat, time)
     return result
