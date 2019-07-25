@@ -84,6 +84,7 @@ class TestStatMethods(unittest.TestCase):
                         timespan:
                             startDate:  
                             endDate:  
+                        shape_file:  
                         variablename: 'band'"""
 
             args_file = yaml.safe_load(ymlStr)
