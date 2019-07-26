@@ -9,7 +9,8 @@ import salem
 import os
 
 def get_data_set(product, shape_file):
-    ds = xr.open_dataset(product)
+    #ds = xr.open_dataset(product)
+    ds = xr.open_mfdataset(product)
     if shape_file:
         ds = cookie_cut_shapefile(ds, shape_file)
     return ds
