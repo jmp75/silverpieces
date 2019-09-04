@@ -19,8 +19,7 @@ conda install -c oggm -c conda-forge --name ${my_env_name} salem  # may be slow 
 conda install -c conda-forge --name ${my_env_name} rasterio geopandas
 
 # optional? ipyleaflet trials
-conda install -c conda-forge --name ${my_env_name} tqdm
-conda install -c conda-forge --name ${my_env_name} ipyleaflet
+conda install -c conda-forge --name ${my_env_name} tqdm ipyleaflet
 
 # nodejs already installed from debian repo
 jupyter-labextension install @jupyter-widgets/jupyterlab-manager
