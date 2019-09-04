@@ -11,23 +11,19 @@ my_env_name=DCX
 conda env remove --name ${my_env_name}
 conda create -c conda-forge --name ${my_env_name} python=3.7
 conda activate ${my_env_name}
-conda install -c conda-forge --name ${my_env_name} jupyterlab ipywidgets jupyter
-conda install -c conda-forge --name ${my_env_name} requests xarray dask matplotlib netCDF4 pytest
-conda install -c conda-forge --name ${my_env_name} seaborn
-conda install -c conda-forge --name ${my_env_name} siphon 
+conda install -c conda-forge --name ${my_env_name} jupyterlab ipywidgets jupyter requests xarray dask matplotlib netCDF4 pytest seaborn siphon 
 
-conda install -c oggm -c conda-forge ${my_env_name} salem  # may be slow to install FYI. Be patient.
+conda install -c oggm -c conda-forge --name ${my_env_name} salem  # may be slow to install FYI. Be patient.
 # you do need `-c oggm -c conda-forge` otherwise if only oggm there may be a unsatisfied dependency kerfuffle
-
 # optional?
 conda install -c conda-forge --name ${my_env_name} rasterio geopandas
-
-# nodejs already installed from debian repo
-jupyter-labextension install @jupyter-widgets/jupyterlab-manager
 
 # optional? ipyleaflet trials
 conda install -c conda-forge --name ${my_env_name} tqdm
 conda install -c conda-forge --name ${my_env_name} ipyleaflet
+
+# nodejs already installed from debian repo
+jupyter-labextension install @jupyter-widgets/jupyterlab-manager
 jupyter-labextension install jupyter-leaflet
 
 # python3 -m ipykernel install --user --name ${my_env_name} --display-name "Py3 (DCX)"
