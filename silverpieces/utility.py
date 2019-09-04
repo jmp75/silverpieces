@@ -34,6 +34,6 @@ class Utility:
         variable_name = args_file.get('Args').get('variablename')
         start_date = args_file.get('Args').get('timespan').get('startDate')
         end_date = args_file.get('Args').get('timespan').get('endDate')
-        shape_file = args_file.get('Args').get('shapeFile')
+        shape_file = args_file.get('Args').get('shape_file')
 
         return product, start_date, end_date, variable_name, shape_file
