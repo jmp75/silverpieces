@@ -1,5 +1,7 @@
 # Exploratory notebooks and notes
 
+To explore the notebooks in this folder you should do so using [Jupyter nbviewer](https://nbviewer.jupyter.org/github/jmp75/silverpieces/tree/master/notebooks) rather than github.
+
 ## Setup
 
 per202 - an occasion to also recreate from scratch a conda env. Update documentation.
