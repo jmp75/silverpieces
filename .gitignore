@@ -15,6 +15,8 @@ venv3
 [Dd]ebug/
 [Rr]elease/
 
+.coverage
+
 # Visual C++ cache files
 ipch/
 *.aps

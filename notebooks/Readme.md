@@ -14,7 +14,7 @@ source ~/anaconda3/bin/activate
 
 ```bash
 # conda update -n base -c defaults conda
-my_env_name=DCX
+my_env_name=sv
 ```
 
 One off to create the conda environment:
@@ -30,8 +30,8 @@ Assuming nodejs already installed from debian repo
 ```bash
 jupyter-labextension install @jupyter-widgets/jupyterlab-manager
 jupyter-labextension install jupyter-leaflet
-# python3 -m ipykernel install --user --name ${my_env_name} --display-name "Py3 (DCX)"
-python3 -m ipykernel install --name ${my_env_name} --display-name "Py3 (DCX)"
+# python3 -m ipykernel install --user --name ${my_env_name} --display-name "Py3 (sv)"
+python3 -m ipykernel install --name ${my_env_name} --display-name "Py3 (sv)"
 ```
 
 ## Experimental
@@ -43,7 +43,7 @@ I may have a student soon exploring [Voila](https://github.com/QuantStack/voila)
 ## start nbk
 
 ```bash
-conda activate DCX
+conda activate sv
 cd $HOME/src/github/silverpieces/ # or...
 jupyter-lab .
 ```

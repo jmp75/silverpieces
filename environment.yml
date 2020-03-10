@@ -1,8 +1,8 @@
-name: DCX
+name: sv
 channels:
   - oggm
   - conda-forge
-  - defaults
+  # - defaults
 dependencies:
   - dask #=2.3.0=py_0
   - geopandas #=0.5.1=py_0
@@ -20,3 +20,18 @@ dependencies:
   - siphon #=0.8.0=py37_1001
   - tqdm #=4.35.0=py_0
   - xarray #=0.12.3=py_0
+  - coverage
+  # Below is needed for another package serving API endpoints over HTTP.
+  - flask
+  - flask-cors
+  - intake
+  - regionmask
+  - birdy
+  - marshmallow 
+  - apispec
+ - pip:
+    - sat-search==0.2.0
+    - jupyter-server-proxy
+    - apispec-webframeworks
+    - dask-labextension==0.3.1
+    - git+https://github.com/NCAR/intake-thredds

@@ -38,16 +38,13 @@ except:
 
 
 
-# with open(os.path.join(os.path.dirname(__file__), "requirements.txt"), "r") as f:
-#     REQUIREMENTS = f.read().splitlines()
-
-
-REQUIREMENTS = ['cffi']
+with open(os.path.join(os.path.dirname(__file__), "requirements.txt"), "r") as f:
+    REQUIREMENTS = f.read().splitlines()
 
 TEST_REQUIREMENTS = ['pytest',
-                    #  'coveralls',
-                    #  'pytest-cov',
-                    #  'pytest-mpl'
+                     'coveralls',
+                     'pytest-cov',
+                     'pytest-mpl'
                      ]
 
 CLASSIFIERS = ['Development Status :: 3 - Alpha',
@@ -56,8 +53,7 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                 'License :: OSI Approved :: MIT License',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python',
-                'Programming Language :: Python :: 2.7',
-                'Programming Language :: Python :: 3.6'
+                'Programming Language :: Python :: 3.7'
                 ]
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -67,21 +63,17 @@ setup(
     version=verstr,
     description='Environmental n dimensional array processing logic',
     long_description=long_description,
-    url='https://bitbucket.csiro.au/scm/eis/silverpieces.git',
+    url='https://github.com/jmp75/silverpieces',
     author='EIS',
-    author_email='someone@csiro.au',
+    author_email='per202@csiro.au',
     classifiers=CLASSIFIERS,
-    keywords='interop python native-libraries reference-counting handle cffi',
+    keywords='',
     packages=['silverpieces'],
     install_requires=REQUIREMENTS,
-    # extras_require={
-    #     ':python_version >= "3.6"': [
-    #         'PyQt5',
-    #     ]
-    # # extras_require={  # Optional
-    # #     'dev': ['check-manifest'],
-    # #     'test': ['coverage'],
-    # },
+    extras_require={  # Optional
+        'dev': ['check-manifest'],
+        'test': ['coverage'],
+    },
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.
@@ -122,10 +114,10 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        'Bug Reports': 'https://bitbucket.csiro.au/scm/eis/silverpieces.git',
+        'Bug Reports': 'https://github.com/jmp75/silverpieces/issues',
         # 'Funding': 'https://donate.pypi.org',
         # 'Say Thanks!': 'http://saythanks.io/to/example',
-        'Source': 'https://bitbucket.csiro.au/scm/eis/silverpieces.git',
+        'Source': 'https://github.com/jmp75/silverpieces',
     },
     zip_safe=False
 )
