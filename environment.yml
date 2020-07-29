@@ -29,7 +29,8 @@ dependencies:
   - birdy
   - marshmallow 
   - apispec
- - pip:
+  - pip
+  - pip:
     - sat-search==0.2.0
     - jupyter-server-proxy
     - apispec-webframeworks
