@@ -23,6 +23,43 @@ pip install -r requirements.txt
 python setup.py install
 ```
 
+If using manual method:
+```sh
+Pull latest version from the repository:
+https://github.com/jmp75/silverpieces.git
+
+in \silverpieces, run:
+>conda env create -f=./environment.yml
+
+Activate the environment:
+>conda activate sv
+(where is ‘sv’ is the name configured in ‘environment.yml’)
+
+Then create the wheel:
+python setup.py sdist bdist_wheel
+
+The change to the ‘dist’ directory, where the file ‘silverpieces-0.2.0-py2.py3-none-any.whl’ should now be ready:
+>pip install silverpieces-0.2.0-py2.py3-none-any.whl
+
+
+Drop back to ‘silverpieces’ and run:
+>jupyter-labextension install @jupyter-widgets/jupyterlab-manager
+
+An error will occur if ‘Node.js’ is not installed.
+If so, run:
+>conda install -c conda-forge nodejs
+(see ‘https://anaconda.org/conda-forge/nodejs’)
+
+Install the manager:
+>jupyter-labextension install @jupyter-widgets/jupyterlab-manager
+
+Install the kernel:
+>python -m ipykernel install --user --name sv --display-name "Py3 Silverpieces"
+
+And to run notebooks:
+>jupyter lab
+
+```
 ## Documentation
 
 ### Example
